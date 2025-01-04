@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class TravelDto {
+export class TravelType {
   @IsString()
   id: string;
   @IsString()

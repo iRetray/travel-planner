@@ -2,11 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { CreateTravelDto, GetTravelDto, TravelDto } from './dto';
+import { CreateTravelDto, GetTravelDto } from './dto';
+import { TravelType } from './entities/Travel';
 
 @Injectable()
 export class TravelsService {
-  private travels: TravelDto[] = [];
+  private travels: TravelType[] = [];
 
   getTravel(id: GetTravelDto['id']) {
     const searchedTravel = this.travels.find((travel) => travel.id === id);

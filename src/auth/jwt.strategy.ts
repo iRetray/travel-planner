@@ -15,7 +15,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: AuthLoginDto) {
-    console.log('JWT Guard: payload', payload);
     return { userId: payload.password, username: payload.username };
   }
 }
