@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -11,7 +12,9 @@ import {
 import { TravelsService } from './travels.service';
 
 import { CreateTravelDto, GetTravelDto } from './dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('travels')
 export class TravelsController {
   constructor(private readonly travelsService: TravelsService) {}
