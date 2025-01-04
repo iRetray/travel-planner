@@ -3,6 +3,8 @@ import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 import { UsersService } from '../users/users.service';
+import { JwtService } from '@nestjs/jwt';
+import { AuthLoginDto } from './dto/AuthLogin.dto';
 
 const ENCRYPTION_CONFIG = {
   saltRounds: 10,
@@ -10,7 +12,10 @@ const ENCRYPTION_CONFIG = {
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService,
+  ) {}
 
   private async getHash(password: string): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -51,5 +56,16 @@ export class AuthService {
       return user;
     }
     return null;
+  }
+
+  async login(user: AuthLoginDto) {
+    const hashedPassword = await this.getHash(user.password);
+    const userWithHashedPassword = {
+      ...user,
+      password: hashedPassword,
+    };
+    return {
+      access_token: this.jwtService.sign(userWithHashedPassword),
+    };
   }
 }

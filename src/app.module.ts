@@ -1,17 +1,24 @@
 import { Module } from '@nestjs/common';
 
-import { UsersService } from './users/users.service';
 import { UsersModule } from './users/users.module';
 
-import { TravelsController } from './travels/travels.controller';
-import { TravelsService } from './travels/travels.service';
 import { TravelsModule } from './travels/travels.module';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+
+import { CONFIG } from './config/config';
 
 @Module({
-  imports: [UsersModule, TravelsModule, AuthModule],
-  controllers: [TravelsController, AppController],
-  providers: [UsersService, TravelsService],
+  imports: [
+    UsersModule,
+    TravelsModule,
+    AuthModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [CONFIG],
+    }),
+  ],
+  controllers: [AppController],
 })
 export class AppModule {}
