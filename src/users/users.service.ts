@@ -12,22 +12,6 @@ export class UsersService {
     private readonly userModel: Model<UserMongoType>,
   ) {}
 
-  private readonly users: UserDto[] = [
-    {
-      ID: uuidv4(),
-      displayName: 'Julian Cruz',
-      username: 'jcruz',
-      passwordHash:
-        '$2b$10$yglieiYnY1ofpcWgpaWw8.KNArVc8YwnETq/GmMgMy2LoZFAwvBFS', // 12345 no hashed
-    },
-    {
-      ID: uuidv4(),
-      displayName: 'Juliana Daniela',
-      username: 'morejuli',
-      passwordHash: '567',
-    },
-  ];
-
   findUser(username: string): Promise<UserDto> {
     return this.userModel
       .findOne({ username })
