@@ -1,10 +1,15 @@
 import * as mongoose from 'mongoose';
-
-const MONGO_DB_URI = 'mongodb://localhost/travel-planner';
+import { ConfigService } from '@nestjs/config';
 
 export const databaseProviders = [
   {
     provide: 'DATABASE_CONNECTION',
-    useFactory: (): Promise<typeof mongoose> => mongoose.connect(MONGO_DB_URI),
+    inject: [ConfigService],
+    useFactory: async (
+      configService: ConfigService,
+    ): Promise<typeof mongoose> => {
+      const mongoUri = configService.get<string>('mongoUri');
+      return mongoose.connect(mongoUri);
+    },
   },
 ];

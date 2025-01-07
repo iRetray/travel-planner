@@ -7,7 +7,7 @@ import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 
-import { CONFIG } from './config/config';
+import { ENV_CONFIG } from './config/config';
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { CONFIG } from './config/config';
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [CONFIG],
+      load: [ENV_CONFIG],
     }),
   ],
   controllers: [AppController],
