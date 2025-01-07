@@ -1,30 +1,40 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 
 import { v4 as uuidv4 } from 'uuid';
 
 import { CreateTravelDto, GetTravelDto } from './dto';
-import { TravelType } from './entities/Travel';
+import { TravelType } from './interfaces/Travel';
+import { TravelMongoType } from './interfaces/travel.interface';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class TravelsService {
-  private travels: TravelType[] = [];
+  constructor(
+    @Inject('TRAVEL_MODEL')
+    private readonly travelModel: Model<TravelMongoType>,
+  ) {}
 
   getTravel(id: GetTravelDto['id']) {
-    const searchedTravel = this.travels.find((travel) => travel.id === id);
-    if (searchedTravel) {
-      return searchedTravel;
-    }
-    throw new NotFoundException(`Travel with id '${id}' not found`);
+    return this.travelModel
+      .findOne({ id })
+      .select('-_id -__v')
+      .exec()
+      .then((travel) => {
+        if (!travel) {
+          throw new NotFoundException(`Travel with id '${id}' not found`);
+        }
+        return travel;
+      });
   }
 
-  getTravels() {
-    return this.travels;
+  getTravels(): Promise<TravelType[]> {
+    return this.travelModel.find().select('-_id -__v').exec();
   }
 
-  createTravel(travel: CreateTravelDto) {
+  createTravel(travel: CreateTravelDto): Promise<TravelType> {
     const newId = uuidv4();
     const newTravel = { id: newId, ...travel };
-    this.travels.push(newTravel);
-    return { message: 'Travel created successfully!', travel: newTravel };
+    const createdTravel = this.travelModel.create(newTravel);
+    return createdTravel;
   }
 }
