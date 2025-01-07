@@ -1,10 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 
 import * as bcrypt from 'bcrypt';
+
+import { v4 as uuidv4 } from 'uuid';
 
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthLoginDto } from './dto/AuthLogin.dto';
+import { AuthRegisterDto } from './dto/AuthRegister.dto';
+import { UserDto } from 'src/users/interfaces/User.dto';
 
 const ENCRYPTION_CONFIG = {
   saltRounds: 10,
@@ -46,16 +56,16 @@ export class AuthService {
     const user = await this.usersService.findUser(username);
     const isUsernameValid = typeof user !== 'undefined';
     if (!isUsernameValid) {
-      return null;
+      throw new NotFoundException("User doesn't exist!");
     }
     const isCorrectPassword = await this.areHashesEquals(
       password,
       user.passwordHash,
     );
-    if (isUsernameValid && isCorrectPassword) {
-      return user;
+    if (!isCorrectPassword) {
+      throw new InternalServerErrorException('Incorrect password!');
     }
-    return null;
+    return user;
   }
 
   async login(user: AuthLoginDto) {
@@ -64,8 +74,31 @@ export class AuthService {
       ...user,
       password: hashedPassword,
     };
+    const userObject = await this.usersService.findUser(user.username);
     return {
+      message: 'User logged in successfully!',
+      description: `Welcome ${userObject.displayName}`,
       access_token: this.jwtService.sign(userWithHashedPassword),
     };
+  }
+
+  async register(user: AuthRegisterDto) {
+    const isUsernameAvailable = this.usersService.isUsernameAvailable(
+      user.username,
+    );
+    if (!isUsernameAvailable) {
+      throw new ConflictException('Username already taken!');
+    }
+    const newUser: UserDto = {
+      ID: uuidv4(),
+      displayName: user.displayName,
+      username: user.username,
+      passwordHash: await this.getHash(user.password),
+    };
+    const createdUser = await this.usersService.createUser(newUser);
+    if (!createdUser) {
+      throw new BadRequestException('User could not be created!');
+    }
+    return { message: 'User created successfully!' };
   }
 }
