@@ -12,7 +12,7 @@ export class UsersService {
     private readonly userModel: Model<UserMongoType>,
   ) {}
 
-  findUser(username: string): Promise<UserDto> {
+  getUser(username: string): Promise<UserDto> {
     return this.userModel
       .findOne({ username })
       .select('-_id -__v')

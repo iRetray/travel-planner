@@ -53,7 +53,7 @@ export class AuthService {
   }
 
   async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.usersService.findUser(username);
+    const user = await this.usersService.getUser(username);
     const isUsernameValid = typeof user !== 'undefined';
     if (!isUsernameValid) {
       throw new NotFoundException("User doesn't exist!");
@@ -74,7 +74,7 @@ export class AuthService {
       ...user,
       password: hashedPassword,
     };
-    const userObject = await this.usersService.findUser(user.username);
+    const userObject = await this.usersService.getUser(user.username);
     return {
       message: 'User logged in successfully!',
       description: `Welcome ${userObject.displayName}`,

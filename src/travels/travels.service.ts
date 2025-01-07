@@ -2,14 +2,16 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { CreateTravelDto, GetTravelDto } from './dto';
+import { CreateTravelDto, DecodedTokenType, GetTravelDto } from './dto';
 import { TravelType } from './interfaces/Travel';
 import { TravelMongoType } from './interfaces/travel.interface';
 import { Model } from 'mongoose';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class TravelsService {
   constructor(
+    private usersService: UsersService,
     @Inject('TRAVEL_MODEL')
     private readonly travelModel: Model<TravelMongoType>,
   ) {}
@@ -17,7 +19,6 @@ export class TravelsService {
   getTravel(id: GetTravelDto['id']) {
     return this.travelModel
       .findOne({ id })
-      .select('-_id -__v')
       .exec()
       .then((travel) => {
         if (!travel) {
@@ -28,12 +29,17 @@ export class TravelsService {
   }
 
   getTravels(): Promise<TravelType[]> {
-    return this.travelModel.find().select('-_id -__v').exec();
+    return this.travelModel.find().exec();
   }
 
-  createTravel(travel: CreateTravelDto): Promise<TravelType> {
+  async createTravel(
+    travel: CreateTravelDto,
+    decodedToken: DecodedTokenType,
+  ): Promise<TravelType> {
+    const currentUser = await this.usersService.getUser(decodedToken.username);
+    const userID = currentUser.ID;
     const newId = uuidv4();
-    const newTravel = { id: newId, ...travel };
+    const newTravel: TravelType = { id: newId, ownerId: userID, ...travel };
     const createdTravel = this.travelModel.create(newTravel);
     return createdTravel;
   }

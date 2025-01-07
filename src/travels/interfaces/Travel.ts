@@ -7,4 +7,6 @@ export class TravelType {
   name: string;
   @IsString()
   description: string;
+  @IsString()
+  ownerId: string;
 }

@@ -6,3 +6,8 @@ export class CreateTravelDto {
   @IsString()
   description: string;
 }
+
+export class DecodedTokenType {
+  username: string;
+  password: string;
+}
