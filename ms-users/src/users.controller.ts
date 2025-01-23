@@ -1,17 +1,17 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { CreateUserDto, GetUserDto, IsUsernameAvailableDto } from './dto';
 
 import { UsersService } from './users.service';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Get('/getUser/:username')
-  getUser(@Param() params: GetUserDto) {
-    return this.usersService.getUser(params.username);
+  @MessagePattern({ cmd: 'GET_USER' })
+  async getUser(data: GetUserDto) {
+    const { username } = data;
+    return await this.usersService.getUser(username);
   }
 
   @Post('/createUser')

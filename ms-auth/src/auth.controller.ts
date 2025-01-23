@@ -21,6 +21,7 @@ export class AuthController {
   @UsePipes(new ValidationPipe())
   @Post('/login')
   async login(@Body() body: AuthLoginDto) {
+    console.log('launching controller');
     return this.authService.login(body);
   }
 

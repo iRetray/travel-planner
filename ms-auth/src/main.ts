@@ -3,6 +3,8 @@ import { AuthModule } from './auth.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
-  await app.listen(process.env.PORT ?? 3000);
+  const port = parseInt(process.env.PORT) || 3000;
+  console.log('🚀 Running MS Auth on port: ', port);
+  await app.listen(port);
 }
 bootstrap();

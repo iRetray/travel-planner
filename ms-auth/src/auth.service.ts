@@ -14,8 +14,12 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { AuthLoginDto } from './dto/AuthLogin.dto';
 import { AuthRegisterDto } from './dto/AuthRegister.dto';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { UserDto } from './interfaces/User.dto';
+import {
+  ClientProxy,
+  ClientProxyFactory,
+  Transport,
+} from '@nestjs/microservices';
 
 const ENCRYPTION_CONFIG = {
   saltRounds: 10,
@@ -23,10 +27,15 @@ const ENCRYPTION_CONFIG = {
 
 @Injectable()
 export class AuthService {
-  constructor(
-    /* private usersService: UsersService, */
-    private jwtService: JwtService,
-  ) {}
+  private msUsersClient: ClientProxy;
+
+  constructor(private jwtService: JwtService) {
+    const port = parseInt(process.env.MS_USERS_PORT) || 3000;
+    this.msUsersClient = ClientProxyFactory.create({
+      transport: Transport.TCP,
+      options: { host: '127.0.0.1', port },
+    });
+  }
 
   private async getHash(password: string): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -54,8 +63,14 @@ export class AuthService {
   }
 
   async validateUser(username: string, password: string): Promise<any> {
-    /* const user = await this.usersService.getUser(username); */
-    const user = '' as any;
+    console.log('validating user');
+    const user = await new Promise<UserDto>((resolve, reject) => {
+      this.msUsersClient.send({ cmd: 'GET_USER' }, { username }).subscribe({
+        next: resolve,
+        error: reject,
+      });
+    });
+    console.log('user getted from ms-users:', user);
     const isUsernameValid = typeof user !== 'undefined';
     if (!isUsernameValid) {
       throw new NotFoundException("User doesn't exist!");
