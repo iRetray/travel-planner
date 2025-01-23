@@ -13,7 +13,7 @@ import {
 import { TravelsService } from './travels.service';
 
 import { CreateTravelDto, DecodedTokenType, GetTravelDto } from './dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { VerifyOwnershipGuard } from './guards/verifyOwnership.guard';
 
