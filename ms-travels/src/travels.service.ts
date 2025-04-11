@@ -43,21 +43,37 @@ export class TravelsService {
       .exec()
       .then((travel) => {
         if (!travel) {
+          console.log('❌ Travel not found');
           throw new NotFoundException(`Travel with id '${id}' not found`);
         }
+        console.log('✅ (travel)', travel);
         return travel;
       });
   }
 
-  getTravels(): Promise<TravelType[]> {
-    return this.travelModel.find().exec();
+  async getTravelsByUsername(username: string): Promise<TravelType[]> {
+    const currentUser = await new Promise<UserDto>((resolve, reject) => {
+      this.msUsersClient.send({ cmd: 'GET_USER' }, { username }).subscribe({
+        next: resolve,
+        error: reject,
+      });
+    });
+    const currentOwner = currentUser.ID;
+    return this.travelModel
+      .find()
+      .exec()
+      .then((travels) => {
+        if (travels) {
+          return travels.filter((travel) => travel.ownerId === currentOwner);
+        }
+        return [];
+      });
   }
 
   async createTravel(
     travel: CreateTravelDto,
-    decodedToken: DecodedTokenType,
+    username: string,
   ): Promise<TravelType> {
-    const username = decodedToken.username;
     const currentUser = await new Promise<UserDto>((resolve, reject) => {
       this.msUsersClient.send({ cmd: 'GET_USER' }, { username }).subscribe({
         next: resolve,
@@ -67,6 +83,7 @@ export class TravelsService {
     const userID = currentUser.ID;
     const newId = uuidv4();
     const newTravel: TravelType = { id: newId, ownerId: userID, ...travel };
+    console.log('✅ (newTravel)', newTravel);
     const createdTravel = this.travelModel.create(newTravel);
     return createdTravel;
   }
@@ -86,14 +103,22 @@ export class TravelsService {
   }
 
   async validateUser(username: string, password: string): Promise<any> {
+    console.log(
+      '✅ Service method [validateUser] (username)',
+      username,
+      '(password)',
+      password,
+    );
     const user = await new Promise<UserDto>((resolve, reject) => {
       this.msUsersClient.send({ cmd: 'GET_USER' }, { username }).subscribe({
         next: resolve,
         error: reject,
       });
     });
+    console.log('✅ (user)', user);
     const isUsernameValid = typeof user !== 'undefined';
     if (!isUsernameValid) {
+      console.log('❌ User not found');
       throw new NotFoundException("User doesn't exist!");
     }
     const isCorrectPassword = await this.areHashesEquals(
@@ -101,8 +126,10 @@ export class TravelsService {
       user.passwordHash,
     );
     if (!isCorrectPassword) {
+      console.log('❌ Password is not correct');
       throw new InternalServerErrorException('Incorrect password!');
     }
+    console.log('✅ Returning user (user)', user);
     return user;
   }
 }

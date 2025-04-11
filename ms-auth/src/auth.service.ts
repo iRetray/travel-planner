@@ -60,14 +60,22 @@ export class AuthService {
   }
 
   async validateUser(username: string, password: string): Promise<any> {
+    console.log(
+      '✅ Service method [validateUser] (username)',
+      username,
+      '(password)',
+      password,
+    );
     const user = await new Promise<UserDto>((resolve, reject) => {
       this.msUsersClient.send({ cmd: 'GET_USER' }, { username }).subscribe({
         next: resolve,
         error: reject,
       });
     });
+    console.log('✅ (user)', user);
     const isUsernameValid = typeof user !== 'undefined';
     if (!isUsernameValid) {
+      console.log('❌ User not found');
       throw new NotFoundException("User doesn't exist!");
     }
     const isCorrectPassword = await this.areHashesEquals(
@@ -75,22 +83,33 @@ export class AuthService {
       user.passwordHash,
     );
     if (!isCorrectPassword) {
+      console.log('❌ Password is not correct');
       throw new InternalServerErrorException('Incorrect password!');
     }
+    console.log('✅ Returning user (user)', user);
     return user;
   }
 
   async login(user: AuthLoginDto) {
+    console.log('✅ Service method [login] (user)', user);
+    const currentUser = await new Promise<UserDto>((resolve, reject) => {
+      this.msUsersClient
+        .send({ cmd: 'GET_USER' }, { username: user.username })
+        .subscribe({
+          next: resolve,
+          error: reject,
+        });
+    });
+    console.log('✅ (currentUser)', currentUser);
     const hashedPassword = await this.getHash(user.password);
+    console.log('✅ (hashedPassword)', hashedPassword);
     const userWithHashedPassword = {
       ...user,
       password: hashedPassword,
     };
-    /* const userObject = await this.usersService.getUser(user.username); */
-    const userObject = '' as any;
     return {
       message: 'User logged in successfully!',
-      description: `Welcome ${userObject.displayName}`,
+      description: `Welcome ${currentUser.displayName}`,
       access_token: this.jwtService.sign(userWithHashedPassword),
     };
   }

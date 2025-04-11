@@ -15,7 +15,6 @@ import { TravelsService } from './travels.service';
 import { CreateTravelDto, DecodedTokenType, GetTravelDto } from './dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtService } from '@nestjs/jwt';
-import { VerifyOwnershipGuard } from './guards/verifyOwnership.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('travels')
@@ -37,10 +36,10 @@ export class TravelsController {
   }
 
   @Get('/getAll')
-  @UseGuards(VerifyOwnershipGuard)
-  getTravels() {
+  getTravels(@Headers('authorization') authorization: string) {
     console.log('✅ Controller handling method /getAll');
-    return this.travelsService.getTravels();
+    const { username } = this.getDecodedToken(authorization);
+    return this.travelsService.getTravelsByUsername(username);
   }
 
   @Post('/create')
@@ -50,9 +49,7 @@ export class TravelsController {
     @Headers('authorization') authorization: string,
   ) {
     console.log('✅ Controller handling method /create');
-    return this.travelsService.createTravel(
-      body,
-      this.getDecodedToken(authorization),
-    );
+    const { username } = this.getDecodedToken(authorization);
+    return this.travelsService.createTravel(body, username);
   }
 }
