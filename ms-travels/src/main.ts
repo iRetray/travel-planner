@@ -3,7 +3,7 @@ import { TravelsModule } from './travels.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(TravelsModule);
-  const port = parseInt(process.env.PORT) || 3000;
+  const port = parseInt(process.env.HTTP_PORT_MS_TRAVELS) || 3001;
   console.log('🚀 Running MS Travels on port: ', port);
   await app.listen(port);
 }

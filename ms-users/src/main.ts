@@ -3,7 +3,7 @@ import { UsersModule } from './users.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
-  const port = parseInt(process.env.PORT) || 3000;
+  const port = parseInt(process.env.TCP_PORT_MS_USERS) || 3003;
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     UsersModule,
     {
@@ -11,7 +11,7 @@ async function bootstrap() {
       options: { host: '127.0.0.1', port },
     },
   );
-  console.log('🚀 Running MS Users on port: ', port);
+  console.log('🚀 Running MS Users (Open to TCP) on port: ', port);
   await app.listen();
 }
 bootstrap();

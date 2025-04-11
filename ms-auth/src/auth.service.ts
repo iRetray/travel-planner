@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -18,6 +19,8 @@ import {
   ClientProxyFactory,
   Transport,
 } from '@nestjs/microservices';
+import { Model } from 'mongoose';
+import { InvalidTokenMongoType } from './interfaces/invalidToken.schema';
 
 const ENCRYPTION_CONFIG = {
   saltRounds: 10,
@@ -27,8 +30,12 @@ const ENCRYPTION_CONFIG = {
 export class AuthService {
   private msUsersClient: ClientProxy;
 
-  constructor(private jwtService: JwtService) {
-    const port = parseInt(process.env.MS_USERS_PORT) || 3000;
+  constructor(
+    private jwtService: JwtService,
+    @Inject('INVALID_TOKEN_MODEL')
+    private readonly invalidTokenModel: Model<InvalidTokenMongoType>,
+  ) {
+    const port = parseInt(process.env.TCP_PORT_MS_USERS) || 3003;
     this.msUsersClient = ClientProxyFactory.create({
       transport: Transport.TCP,
       options: { host: '127.0.0.1', port },
@@ -91,6 +98,10 @@ export class AuthService {
     return user;
   }
 
+  async logout(user: AuthLoginDto) {
+    // TODO: logout
+  }
+
   async login(user: AuthLoginDto) {
     console.log('✅ Service method [login] (user)', user);
     const currentUser = await new Promise<UserDto>((resolve, reject) => {
@@ -149,5 +160,20 @@ export class AuthService {
       throw new BadRequestException('User could not be created!');
     }
     return { message: 'User created successfully!' };
+  }
+
+  async invalidateToken(token: string): Promise<void> {
+    console.log('✅ Service method [invalidateToken] (token)', token);
+    await this.invalidTokenModel.create({ token });
+    console.log('✅ Token invalidated');
+  }
+
+  async isTokenValid(token: string): Promise<boolean> {
+    const creado = await this.invalidateToken('ABC');
+    console.log('✅ Service method [isTokenInvalidated] (creado)', creado);
+    console.log('✅ Service method [isTokenInvalidated] (token)', token);
+    const result = await this.invalidTokenModel.findOne({ token }).exec();
+    console.log('✅ (isTokenInvalidated)', !!!result);
+    return !!!result;
   }
 }

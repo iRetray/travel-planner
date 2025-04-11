@@ -12,6 +12,8 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { AuthLoginDto } from './dto/AuthLogin.dto';
 import { AuthRegisterDto } from './dto/AuthRegister.dto';
+import { TokenDto } from './dto/TokenDto.dto';
+import { MessagePattern } from '@nestjs/microservices';
 
 @Controller('auth')
 export class AuthController {
@@ -32,5 +34,21 @@ export class AuthController {
     return this.authService.register(body);
   }
 
-  /* TODO: Create method to Logout */
+  @UsePipes(new ValidationPipe())
+  @Post('/logout')
+  async logout(@Body() body: AuthLoginDto) {
+    console.log('✅ Controller handling method /logout (body)', body);
+    return this.authService.logout(body);
+  }
+
+  @MessagePattern({ cmd: 'IS_TOKEN_VALID' })
+  async isTokenValid(data: TokenDto) {
+    console.log(
+      '✅ Controller handling method [isTokenValid] from TCP (data)',
+      data,
+    );
+    const { token } = data;
+    await this.authService.isTokenValid(token);
+    return;
+  }
 }

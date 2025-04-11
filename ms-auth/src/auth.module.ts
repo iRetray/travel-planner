@@ -9,9 +9,12 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 
 import { ENV_CONFIG } from './config/config';
+import { authProviders } from './auth.providers';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
+    DatabaseModule,
     PassportModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -28,7 +31,7 @@ import { ENV_CONFIG } from './config/config';
       },
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, ...authProviders],
   exports: [AuthService],
   controllers: [AuthController],
 })

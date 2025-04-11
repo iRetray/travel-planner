@@ -1,7 +1,7 @@
 import { IsString, MinLength } from 'class-validator';
 
-export class GetTravelDto {
+export class TokenDto {
   @IsString()
   @MinLength(3)
-  id: string;
+  token: string;
 }
