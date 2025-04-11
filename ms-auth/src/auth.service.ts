@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 
 import * as bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
 import { JwtService } from '@nestjs/jwt';
 import { AuthLoginDto } from './dto/AuthLogin.dto';
@@ -114,24 +115,37 @@ export class AuthService {
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async register(user: AuthRegisterDto) {
-    const isUsernameAvailable = true;
-    /* const isUsernameAvailable = this.usersService.isUsernameAvailable(
-      user.username,
-    ); */
+    console.log('✅ Service method [register] (user)', user);
+    const isUsernameAvailable = await new Promise<boolean>(
+      (resolve, reject) => {
+        this.msUsersClient
+          .send({ cmd: 'IS_USERNAME_AVAILABLE' }, { username: user.username })
+          .subscribe({
+            next: resolve,
+            error: reject,
+          });
+      },
+    );
     if (!isUsernameAvailable) {
+      console.log('❌ Username already taken!');
       throw new ConflictException('Username already taken!');
     }
-    /* const newUser: UserDto = {
+    const newUser: UserDto = {
       ID: uuidv4(),
       displayName: user.displayName,
       username: user.username,
       passwordHash: await this.getHash(user.password),
-    }; */
-    const createdUser = '' as any;
-    /* const createdUser = await this.usersService.createUser(newUser); */
+    };
+    const createdUser = await new Promise<UserDto>((resolve, reject) => {
+      this.msUsersClient.send({ cmd: 'CREATE_USER' }, newUser).subscribe({
+        next: resolve,
+        error: reject,
+      });
+    });
+    console.log('✅ (createdUser)', createdUser);
     if (!createdUser) {
+      console.log('❌ Error creating new user');
       throw new BadRequestException('User could not be created!');
     }
     return { message: 'User created successfully!' };

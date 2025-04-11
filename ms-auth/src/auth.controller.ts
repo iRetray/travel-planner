@@ -28,7 +28,9 @@ export class AuthController {
   @UsePipes(new ValidationPipe())
   @Post('/register')
   async register(@Body() body: AuthRegisterDto) {
-    console.log('✅ Controller handling method /register');
+    console.log('✅ Controller handling method /register (body)', body);
     return this.authService.register(body);
   }
+
+  /* TODO: Create method to Logout */
 }

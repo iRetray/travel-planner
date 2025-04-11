@@ -29,6 +29,16 @@
 - Planificar viajes (destino, fechas, lista de cosas por hacer).
 - Editar y eliminar viajes.
 
+**Usuarios** 
+
+```bash
+jcruz
+ABC123
+
+fcruz
+DEF456
+```
+
 ## Project setup
 
 ```bash

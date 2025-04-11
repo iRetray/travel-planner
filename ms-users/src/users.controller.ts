@@ -20,18 +20,21 @@ export class UsersController {
     return user;
   }
 
-  @Post('/createUser')
-  createUser(@Body() body: CreateUserDto) {
-    console.log('✅ Controller handling method /createUser (body)', body);
-    return this.usersService.createUser(body);
+  @MessagePattern({ cmd: 'CREATE_USER' })
+  createUser(data: CreateUserDto) {
+    console.log(
+      '✅ Controller handling method [createUser] from TCP (data)',
+      data,
+    );
+    return this.usersService.createUser(data);
   }
 
-  @Get('/isUsernameAvailable/:username')
-  isUsernameAvailable(@Param() params: IsUsernameAvailableDto) {
+  @MessagePattern({ cmd: 'IS_USERNAME_AVAILABLE' })
+  isUsernameAvailable(data: IsUsernameAvailableDto) {
     console.log(
-      '✅ Controller handling method /isUsernameAvailable/:username (params)',
-      params,
+      '✅ Controller handling method [isUsernameAvailable] from TCP (data)',
+      data,
     );
-    return this.usersService.isUsernameAvailable(params.username);
+    return this.usersService.isUsernameAvailable(data.username);
   }
 }

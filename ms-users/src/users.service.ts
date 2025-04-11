@@ -38,8 +38,10 @@ export class UsersService {
       .select('-_id -__v')
       .exec()
       .then((foundUser) => {
-        const isUsernameAvailable = typeof foundUser === 'undefined';
-        return isUsernameAvailable;
+        console.log('✅ Buscando usuario (username): ', username);
+        const isUsernameInDatabase = !!foundUser;
+        console.log('✅ (isUsernameInDatabase) ', isUsernameInDatabase);
+        return !isUsernameInDatabase;
       });
   }
 }

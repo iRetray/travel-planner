@@ -29,6 +29,7 @@ export class TravelsController {
     return this.jwtService.decode(token);
   }
 
+  /* TODO: Create validation to get travel by ID if the owner is owner */
   @Get('/get/:id')
   getTravel(@Param() params: GetTravelDto) {
     console.log('✅ Controller handling method /get/:id');
@@ -52,4 +53,8 @@ export class TravelsController {
     const { username } = this.getDecodedToken(authorization);
     return this.travelsService.createTravel(body, username);
   }
+
+  /* TODO: Create method to DELETE */
+
+  /* TODO: Create method to EDIT */
 }
