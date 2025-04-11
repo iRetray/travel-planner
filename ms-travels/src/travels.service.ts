@@ -1,6 +1,12 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { v4 as uuidv4 } from 'uuid';
+import * as bcrypt from 'bcrypt';
 
 import { CreateTravelDto, DecodedTokenType, GetTravelDto } from './dto';
 import { TravelType } from './interfaces/Travel';
@@ -61,5 +67,40 @@ export class TravelsService {
     const newTravel: TravelType = { id: newId, ownerId: userID, ...travel };
     const createdTravel = this.travelModel.create(newTravel);
     return createdTravel;
+  }
+
+  private async areHashesEquals(
+    password: string,
+    hash: string,
+  ): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      bcrypt.compare(password, hash, (error, isEqual) => {
+        if (error) {
+          reject(error);
+        }
+        resolve(isEqual);
+      });
+    });
+  }
+
+  async validateUser(username: string, password: string): Promise<any> {
+    const user = await new Promise<UserDto>((resolve, reject) => {
+      this.msUsersClient.send({ cmd: 'GET_USER' }, { username }).subscribe({
+        next: resolve,
+        error: reject,
+      });
+    });
+    const isUsernameValid = typeof user !== 'undefined';
+    if (!isUsernameValid) {
+      throw new NotFoundException("User doesn't exist!");
+    }
+    const isCorrectPassword = await this.areHashesEquals(
+      password,
+      user.passwordHash,
+    );
+    if (!isCorrectPassword) {
+      throw new InternalServerErrorException('Incorrect password!');
+    }
+    return user;
   }
 }

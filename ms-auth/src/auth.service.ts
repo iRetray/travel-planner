@@ -8,9 +8,6 @@ import {
 
 import * as bcrypt from 'bcrypt';
 
-/* import { v4 as uuidv4 } from 'uuid'; */
-
-/* import { UsersService } from '../users/users.service'; */
 import { JwtService } from '@nestjs/jwt';
 import { AuthLoginDto } from './dto/AuthLogin.dto';
 import { AuthRegisterDto } from './dto/AuthRegister.dto';

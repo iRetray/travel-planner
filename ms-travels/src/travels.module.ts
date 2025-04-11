@@ -6,6 +6,8 @@ import { travelsProviders } from './travels.providers';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ENV_CONFIG } from './config/config';
+import { JwtStrategy } from './guards/jwt.strategy';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -27,6 +29,6 @@ import { ENV_CONFIG } from './config/config';
     }),
   ],
   controllers: [TravelsController],
-  providers: [TravelsService, ...travelsProviders],
+  providers: [TravelsService, JwtStrategy, JwtAuthGuard, ...travelsProviders],
 })
 export class TravelsModule {}
