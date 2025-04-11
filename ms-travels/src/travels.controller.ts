@@ -32,12 +32,14 @@ export class TravelsController {
 
   @Get('/get/:id')
   getTravel(@Param() params: GetTravelDto) {
+    console.log('✅ Controller handling method /get/:id');
     return this.travelsService.getTravel(params.id);
   }
 
   @Get('/getAll')
   @UseGuards(VerifyOwnershipGuard)
   getTravels() {
+    console.log('✅ Controller handling method /getAll');
     return this.travelsService.getTravels();
   }
 
@@ -47,6 +49,7 @@ export class TravelsController {
     @Body() body: CreateTravelDto,
     @Headers('authorization') authorization: string,
   ) {
+    console.log('✅ Controller handling method /create');
     return this.travelsService.createTravel(
       body,
       this.getDecodedToken(authorization),

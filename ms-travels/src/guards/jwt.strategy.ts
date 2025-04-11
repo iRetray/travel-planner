@@ -7,6 +7,7 @@ import { AuthLoginDto } from '../dto';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly configService: ConfigService) {
+    console.log('✅ JWT Strategy with Passport');
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -15,6 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: AuthLoginDto) {
+    console.log('✅ JWT Strategy method validate (payload)', payload);
     return { userId: payload.password, username: payload.username };
   }
 }

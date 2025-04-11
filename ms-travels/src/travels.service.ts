@@ -28,11 +28,13 @@ export class TravelsService {
     @Inject('TRAVEL_MODEL')
     private readonly travelModel: Model<TravelMongoType>,
   ) {
+    console.log('✅ TravelsService constructor');
     const port = parseInt(process.env.MS_USERS_PORT) || 3000;
     this.msUsersClient = ClientProxyFactory.create({
       transport: Transport.TCP,
       options: { host: '127.0.0.1', port },
     });
+    console.log('✅ MS Users connected by TCP at port:', port);
   }
 
   getTravel(id: GetTravelDto['id']) {

@@ -21,13 +21,14 @@ export class AuthController {
   @UsePipes(new ValidationPipe())
   @Post('/login')
   async login(@Body() body: AuthLoginDto) {
-    console.log('launching controller');
+    console.log('✅ Controller handling method /login');
     return this.authService.login(body);
   }
 
   @UsePipes(new ValidationPipe())
   @Post('/register')
   async register(@Body() body: AuthRegisterDto) {
+    console.log('✅ Controller handling method /register');
     return this.authService.register(body);
   }
 }

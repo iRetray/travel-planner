@@ -10,17 +10,28 @@ export class UsersController {
 
   @MessagePattern({ cmd: 'GET_USER' })
   async getUser(data: GetUserDto) {
+    console.log(
+      '✅ Controller handling method [getUser] from TCP (data)',
+      data,
+    );
     const { username } = data;
-    return await this.usersService.getUser(username);
+    const user = await this.usersService.getUser(username);
+    console.log('✅ Returning object (user)', user);
+    return user;
   }
 
   @Post('/createUser')
   createUser(@Body() body: CreateUserDto) {
+    console.log('✅ Controller handling method /createUser (body)', body);
     return this.usersService.createUser(body);
   }
 
   @Get('/isUsernameAvailable/:username')
   isUsernameAvailable(@Param() params: IsUsernameAvailableDto) {
+    console.log(
+      '✅ Controller handling method /isUsernameAvailable/:username (params)',
+      params,
+    );
     return this.usersService.isUsernameAvailable(params.username);
   }
 }
