@@ -6,15 +6,28 @@ import { CreateTravelDto, DecodedTokenType, GetTravelDto } from './dto';
 import { TravelType } from './interfaces/Travel';
 import { TravelMongoType } from './interfaces/travel.interface';
 import { Model } from 'mongoose';
-import { UsersService } from 'src/users/users.service';
+
+import {
+  ClientProxy,
+  ClientProxyFactory,
+  Transport,
+} from '@nestjs/microservices';
+import { UserDto } from './interfaces/User.dto';
 
 @Injectable()
 export class TravelsService {
+  private msUsersClient: ClientProxy;
+
   constructor(
-    private usersService: UsersService,
     @Inject('TRAVEL_MODEL')
     private readonly travelModel: Model<TravelMongoType>,
-  ) {}
+  ) {
+    const port = parseInt(process.env.MS_USERS_PORT) || 3000;
+    this.msUsersClient = ClientProxyFactory.create({
+      transport: Transport.TCP,
+      options: { host: '127.0.0.1', port },
+    });
+  }
 
   getTravel(id: GetTravelDto['id']) {
     return this.travelModel
@@ -36,7 +49,13 @@ export class TravelsService {
     travel: CreateTravelDto,
     decodedToken: DecodedTokenType,
   ): Promise<TravelType> {
-    const currentUser = await this.usersService.getUser(decodedToken.username);
+    const username = decodedToken.username;
+    const currentUser = await new Promise<UserDto>((resolve, reject) => {
+      this.msUsersClient.send({ cmd: 'GET_USER' }, { username }).subscribe({
+        next: resolve,
+        error: reject,
+      });
+    });
     const userID = currentUser.ID;
     const newId = uuidv4();
     const newTravel: TravelType = { id: newId, ownerId: userID, ...travel };

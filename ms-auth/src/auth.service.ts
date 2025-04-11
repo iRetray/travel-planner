@@ -63,14 +63,12 @@ export class AuthService {
   }
 
   async validateUser(username: string, password: string): Promise<any> {
-    console.log('validating user');
     const user = await new Promise<UserDto>((resolve, reject) => {
       this.msUsersClient.send({ cmd: 'GET_USER' }, { username }).subscribe({
         next: resolve,
         error: reject,
       });
     });
-    console.log('user getted from ms-users:', user);
     const isUsernameValid = typeof user !== 'undefined';
     if (!isUsernameValid) {
       throw new NotFoundException("User doesn't exist!");

@@ -5,14 +5,18 @@ import { DatabaseModule } from 'src/database/database.module';
 import { travelsProviders } from './travels.providers';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersModule } from 'src/users/users.module';
+import { ENV_CONFIG } from './config/config';
 
 @Module({
   imports: [
     DatabaseModule,
-    UsersModule,
     JwtModule.registerAsync({
-      imports: [ConfigModule],
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          load: [ENV_CONFIG],
+        }),
+      ],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         return {
