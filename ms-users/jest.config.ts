@@ -14,6 +14,8 @@ const config: Config = {
     '!**/*.schema.ts',
     '!**/interfaces/**',
     '!**/config/**',
+    '!**/database/**',
+    '!users.providers.ts',
     '!main.ts',
   ],
   coverageDirectory: '../coverage',

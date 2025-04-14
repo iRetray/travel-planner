@@ -14,6 +14,8 @@ const config: Config = {
     '!**/*.schema.ts',
     '!**/interfaces/**',
     '!**/config/**',
+    '!**/guards/local.strategy.ts',
+    '!**/guards/jwt-auth.guard.ts',
     '!main.ts',
   ],
   coverageDirectory: '../coverage',
