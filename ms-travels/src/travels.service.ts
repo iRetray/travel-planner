@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -37,8 +38,18 @@ export class TravelsService {
     console.log('✅ MS Users connected by TCP at port:', port);
   }
 
-  getTravel(id: GetTravelDto['id']) {
+  async getTravel(
+    id: GetTravelDto['id'],
+    username: string,
+  ): Promise<TravelType> {
     console.log('✅ Metodo [getTravel] (id)', id);
+    const currentUser = await new Promise<UserDto>((resolve, reject) => {
+      this.msUsersClient.send({ cmd: 'GET_USER' }, { username }).subscribe({
+        next: resolve,
+        error: reject,
+      });
+    });
+    const currentOwner = currentUser.ID;
     return this.travelModel
       .findOne({ id })
       .exec()
@@ -46,6 +57,10 @@ export class TravelsService {
         if (!travel) {
           console.log('❌ Travel not found');
           throw new NotFoundException(`Travel with id '${id}' not found`);
+        }
+        if (currentOwner !== travel.ownerId) {
+          console.log('❌ This travel is not yours!');
+          throw new ForbiddenException(`Travel with id '${id}' is not yours`);
         }
         console.log('✅ (travel)', travel);
         return travel;
@@ -92,6 +107,71 @@ export class TravelsService {
     console.log('✅ (newTravel)', newTravel);
     const createdTravel = this.travelModel.create(newTravel);
     return createdTravel;
+  }
+
+  async editTravel(
+    id: GetTravelDto['id'],
+    updates: CreateTravelDto,
+    username: string,
+  ): Promise<TravelType> {
+    console.log('✅ Metodo [editTravel]');
+    console.log('(id)', id);
+    console.log('(updates)', JSON.stringify(updates));
+    console.log('(username)', username);
+    const currentUser = await new Promise<UserDto>((resolve, reject) => {
+      this.msUsersClient.send({ cmd: 'GET_USER' }, { username }).subscribe({
+        next: resolve,
+        error: reject,
+      });
+    });
+
+    const currentOwner = currentUser.ID;
+    const travel = await this.travelModel.findOne({ id }).exec();
+    if (!travel) {
+      console.log(`❌ Travel with id ${id} not found`);
+      throw new NotFoundException(`Travel with id '${id}' not found`);
+    }
+    if (travel.ownerId !== currentOwner) {
+      console.log('❌ This travel is not yours!');
+      throw new ForbiddenException(`You are not allowed to update this travel`);
+    }
+
+    const updatedTravel = await this.travelModel
+      .findOneAndUpdate({ id }, { $set: updates }, { new: true })
+      .exec();
+    console.log('✅ Travel updated:', updatedTravel);
+
+    return updatedTravel;
+  }
+
+  async deleteTravel(
+    id: GetTravelDto['id'],
+    username: string,
+  ): Promise<{ message: string }> {
+    const currentUser = await new Promise<UserDto>((resolve, reject) => {
+      this.msUsersClient.send({ cmd: 'GET_USER' }, { username }).subscribe({
+        next: resolve,
+        error: reject,
+      });
+    });
+
+    const currentOwner = currentUser.ID;
+    const travel = await this.travelModel.findOne({ id }).exec();
+
+    if (!travel) {
+      console.log(`❌ Travel with id ${id} not found`);
+      throw new NotFoundException(`Travel with id '${id}' not found`);
+    }
+
+    if (travel.ownerId !== currentOwner) {
+      console.log('❌ This travel is not yours!');
+      throw new ForbiddenException(`You are not allowed to delete this travel`);
+    }
+
+    await this.travelModel.deleteOne({ id }).exec();
+    console.log(`✅ Travel with id ${id} deleted successfully`);
+
+    return { message: `Travel with id '${id}' deleted successfully` };
   }
 
   private async areHashesEquals(

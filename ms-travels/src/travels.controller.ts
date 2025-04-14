@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
   Param,
+  Patch,
   Post,
   UseGuards,
   UsePipes,
@@ -29,11 +31,14 @@ export class TravelsController {
     return this.jwtService.decode(token);
   }
 
-  /* TODO: Create validation to get travel by ID if the owner is owner */
   @Get('/get/:id')
-  getTravel(@Param() params: GetTravelDto) {
+  getTravel(
+    @Param() params: GetTravelDto,
+    @Headers('authorization') authorization: string,
+  ) {
+    const { username } = this.getDecodedToken(authorization);
     console.log('✅ Controller handling method /get/:id');
-    return this.travelsService.getTravel(params.id);
+    return this.travelsService.getTravel(params.id, username);
   }
 
   @Get('/getAll')
@@ -54,7 +59,24 @@ export class TravelsController {
     return this.travelsService.createTravel(body, username);
   }
 
-  /* TODO: Create method to DELETE */
+  @Patch('/edit/:id')
+  editTravel(
+    @Param() params: GetTravelDto,
+    @Body() body: CreateTravelDto,
+    @Headers('authorization') authorization: string,
+  ) {
+    const { username } = this.getDecodedToken(authorization);
+    console.log('✅ Controller handling method /get/:id');
+    return this.travelsService.editTravel(params.id, body, username);
+  }
 
-  /* TODO: Create method to EDIT */
+  @Delete('/delete/:id')
+  deleteTravel(
+    @Param() params: GetTravelDto,
+    @Headers('authorization') authorization: string,
+  ) {
+    const { username } = this.getDecodedToken(authorization);
+    console.log('✅ Controller handling method /delete/:id');
+    return this.travelsService.deleteTravel(params.id, username);
+  }
 }
