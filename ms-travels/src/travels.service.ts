@@ -84,7 +84,11 @@ export class TravelsService {
     });
     const userID = currentUser.ID;
     const newId = uuidv4();
-    const newTravel: TravelType = { id: newId, ownerId: userID, ...travel };
+    const newTravel: TravelType = {
+      id: newId,
+      ownerId: userID,
+      ...travel,
+    };
     console.log('✅ (newTravel)', newTravel);
     const createdTravel = this.travelModel.create(newTravel);
     return createdTravel;

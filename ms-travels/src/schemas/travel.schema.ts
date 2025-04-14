@@ -5,6 +5,10 @@ export const TravelSchema = new mongoose.Schema(
     id: String,
     name: String,
     description: String,
+    startDate: Number,
+    endDate: Number,
+    destination: String,
+    activities: [String],
     ownerId: String,
   },
   {

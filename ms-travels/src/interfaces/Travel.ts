@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsArray, IsNumber, IsString } from 'class-validator';
 
 export class TravelType {
   @IsString()
@@ -7,6 +7,14 @@ export class TravelType {
   name: string;
   @IsString()
   description: string;
+  @IsNumber()
+  startDate: number;
+  @IsNumber()
+  endDate: number;
+  @IsString()
+  destination: string;
+  @IsArray()
+  activities: string[];
   @IsString()
   ownerId: string;
 }
