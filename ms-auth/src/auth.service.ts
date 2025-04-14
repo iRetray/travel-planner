@@ -98,10 +98,6 @@ export class AuthService {
     return user;
   }
 
-  async logout(user: AuthLoginDto) {
-    // TODO: logout
-  }
-
   async login(user: AuthLoginDto) {
     console.log('✅ Service method [login] (user)', user);
     const currentUser = await new Promise<UserDto>((resolve, reject) => {
@@ -162,18 +158,21 @@ export class AuthService {
     return { message: 'User created successfully!' };
   }
 
-  async invalidateToken(token: string): Promise<void> {
+  async logout(token: string): Promise<{ message: string }> {
     console.log('✅ Service method [invalidateToken] (token)', token);
-    await this.invalidTokenModel.create({ token });
+    await this.invalidTokenModel.create({
+      token,
+      isInvalid: true,
+    });
     console.log('✅ Token invalidated');
+    return { message: 'Token invalidated!' };
   }
 
   async isTokenValid(token: string): Promise<boolean> {
-    const creado = await this.invalidateToken('ABC');
-    console.log('✅ Service method [isTokenInvalidated] (creado)', creado);
     console.log('✅ Service method [isTokenInvalidated] (token)', token);
-    const result = await this.invalidTokenModel.findOne({ token }).exec();
-    console.log('✅ (isTokenInvalidated)', !!!result);
-    return !!!result;
+    const invalidToken = await this.invalidTokenModel.findOne({ token }).exec();
+    const isValid = !invalidToken;
+    console.log('✅ El token es valido?', isValid);
+    return isValid;
   }
 }

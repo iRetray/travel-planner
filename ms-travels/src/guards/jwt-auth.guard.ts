@@ -52,6 +52,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
     console.log('✅ (isTokenValid)', isTokenValid);
 
     if (!isTokenValid) {
+      console.log('❌ Token has been invalidated (logout)');
       throw new UnauthorizedException('Token has been invalidated (logout)');
     }
 

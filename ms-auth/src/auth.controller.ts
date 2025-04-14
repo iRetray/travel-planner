@@ -5,6 +5,7 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
+  Headers,
 } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
@@ -36,9 +37,10 @@ export class AuthController {
 
   @UsePipes(new ValidationPipe())
   @Post('/logout')
-  async logout(@Body() body: AuthLoginDto) {
-    console.log('✅ Controller handling method /logout (body)', body);
-    return this.authService.logout(body);
+  async logout(@Headers('authorization') authorization: string) {
+    const token = authorization.split(' ')[1];
+    console.log('✅ Controller handling method /logout (token)', token);
+    return this.authService.logout(token);
   }
 
   @MessagePattern({ cmd: 'IS_TOKEN_VALID' })
@@ -48,7 +50,6 @@ export class AuthController {
       data,
     );
     const { token } = data;
-    await this.authService.isTokenValid(token);
-    return;
+    return this.authService.isTokenValid(token);
   }
 }

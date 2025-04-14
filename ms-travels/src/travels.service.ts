@@ -29,7 +29,7 @@ export class TravelsService {
     private readonly travelModel: Model<TravelMongoType>,
   ) {
     console.log('✅ TravelsService constructor');
-    const port = parseInt(process.env.MS_USERS_PORT) || 3000;
+    const port = parseInt(process.env.TCP_PORT_MS_USERS) || 3000;
     this.msUsersClient = ClientProxyFactory.create({
       transport: Transport.TCP,
       options: { host: '127.0.0.1', port },
@@ -38,6 +38,7 @@ export class TravelsService {
   }
 
   getTravel(id: GetTravelDto['id']) {
+    console.log('✅ Metodo [getTravel] (id)', id);
     return this.travelModel
       .findOne({ id })
       .exec()
@@ -52,6 +53,7 @@ export class TravelsService {
   }
 
   async getTravelsByUsername(username: string): Promise<TravelType[]> {
+    console.log('✅ Metodo [getTravelsByUsername] (username)', username);
     const currentUser = await new Promise<UserDto>((resolve, reject) => {
       this.msUsersClient.send({ cmd: 'GET_USER' }, { username }).subscribe({
         next: resolve,
