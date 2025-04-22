@@ -1,13 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from '../users.service';
+import { UsersServiceAdapter } from '../users.service';
 import { Model } from 'mongoose';
 import { UserDto } from '../interfaces/User.dto';
 import { UserMongoType } from '../interfaces/user.interface';
 import { NotFoundException } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 
 describe('UsersService', () => {
-  let service: UsersService;
+  let service: UsersServiceAdapter;
   let userModel: Model<UserMongoType>;
 
   const mockUserModel = {
@@ -20,7 +19,7 @@ describe('UsersService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        UsersService,
+        UsersServiceAdapter,
         {
           provide: 'USER_MODEL',
           useValue: mockUserModel,
@@ -28,7 +27,7 @@ describe('UsersService', () => {
       ],
     }).compile();
 
-    service = module.get<UsersService>(UsersService);
+    service = module.get<UsersServiceAdapter>(UsersServiceAdapter);
     userModel = module.get<Model<UserMongoType>>('USER_MODEL');
   });
 

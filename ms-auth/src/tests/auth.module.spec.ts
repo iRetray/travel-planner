@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthModule } from '../auth.module';
-import { AuthService } from '../auth.service';
+import { AuthServiceAdapter } from '../auth.service';
 import { AuthController } from '../auth.controller';
 import { LocalStrategy } from '../local.strategy';
 import { JwtStrategy } from '../jwt.strategy';
@@ -20,8 +20,8 @@ describe('AuthModule', () => {
   });
 
   it('should resolve AuthService', () => {
-    const service = module.get<AuthService>(AuthService);
-    expect(service).toBeInstanceOf(AuthService);
+    const service = module.get<AuthServiceAdapter>(AuthServiceAdapter);
+    expect(service).toBeInstanceOf(AuthServiceAdapter);
   });
 
   it('should resolve AuthController', () => {

@@ -4,9 +4,10 @@ import { UserDto } from './interfaces/User.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { Model } from 'mongoose';
 import { UserMongoType } from './interfaces/user.interface';
+import { UsersServicePort } from './domain/UsersService.port';
 
 @Injectable()
-export class UsersService {
+export class UsersServiceAdapter implements UsersServicePort {
   constructor(
     @Inject('USER_MODEL')
     private readonly userModel: Model<UserMongoType>,

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { UsersServiceAdapter } from './users.service';
 import { usersProviders } from './users.providers';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
@@ -15,8 +15,8 @@ import { ENV_CONFIG } from './config/config';
       load: [ENV_CONFIG],
     }),
   ],
-  providers: [UsersService, ...usersProviders],
-  exports: [UsersService],
+  providers: [UsersServiceAdapter, ...usersProviders],
+  exports: [UsersServiceAdapter],
   controllers: [UsersController],
 })
 export class UsersModule {}

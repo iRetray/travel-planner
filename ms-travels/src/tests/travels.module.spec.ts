@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TravelsModule } from '../travels.module';
 import { TravelsController } from '../travels.controller';
-import { TravelsService } from '../travels.service';
+import { TravelsServiceAdapter } from '../travels.service';
 import { DatabaseModule } from '../database/database.module';
 import { travelsProviders } from '../travels.providers';
 import { JwtModule } from '@nestjs/jwt';
@@ -27,7 +27,9 @@ describe('TravelsModule', () => {
   });
 
   it('should provide TravelsService', () => {
-    expect(module.get<TravelsService>(TravelsService)).toBeDefined();
+    expect(
+      module.get<TravelsServiceAdapter>(TravelsServiceAdapter),
+    ).toBeDefined();
   });
 
   it('should provide DatabaseModule', () => {

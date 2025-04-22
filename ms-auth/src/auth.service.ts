@@ -21,13 +21,14 @@ import {
 } from '@nestjs/microservices';
 import { Model } from 'mongoose';
 import { InvalidTokenMongoType } from './interfaces/invalidToken.schema';
+import { AuthServicePort } from './domain/AuthService.port';
 
 const ENCRYPTION_CONFIG = {
   saltRounds: 10,
 };
 
 @Injectable()
-export class AuthService {
+export class AuthServiceAdapter implements AuthServicePort {
   private msUsersClient: ClientProxy;
 
   constructor(

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from '../auth.service';
+import { AuthServiceAdapter } from '../auth.service';
 import { JwtService } from '@nestjs/jwt';
 import {
   ConflictException,
@@ -11,7 +11,7 @@ import * as bcrypt from 'bcrypt';
 jest.mock('bcrypt');
 
 describe('AuthService', () => {
-  let service: AuthService;
+  let service: AuthServiceAdapter;
 
   const mockJwtService = {
     sign: jest.fn().mockReturnValue('mocked-jwt-token'),
@@ -30,13 +30,13 @@ describe('AuthService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        AuthService,
+        AuthServiceAdapter,
         { provide: JwtService, useValue: mockJwtService },
         { provide: 'INVALID_TOKEN_MODEL', useValue: mockInvalidTokenModel },
       ],
     }).compile();
 
-    service = module.get<AuthService>(AuthService);
+    service = module.get<AuthServiceAdapter>(AuthServiceAdapter);
     // @ts-ignore
     service.msUsersClient = mockMsUsersClient;
   });

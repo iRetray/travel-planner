@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TravelsController } from './travels.controller';
-import { TravelsService } from './travels.service';
+import { TravelsServiceAdapter } from './travels.service';
 import { DatabaseModule } from './database/database.module';
 import { travelsProviders } from './travels.providers';
 import { JwtModule } from '@nestjs/jwt';
@@ -29,6 +29,11 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
     }),
   ],
   controllers: [TravelsController],
-  providers: [TravelsService, JwtStrategy, JwtAuthGuard, ...travelsProviders],
+  providers: [
+    TravelsServiceAdapter,
+    JwtStrategy,
+    JwtAuthGuard,
+    ...travelsProviders,
+  ],
 })
 export class TravelsModule {}

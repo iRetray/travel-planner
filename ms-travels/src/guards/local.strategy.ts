@@ -1,11 +1,11 @@
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { TravelsService } from '../travels.service';
+import { TravelsServiceAdapter } from '../travels.service';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(private travelsService: TravelsService) {
+  constructor(private travelsService: TravelsServiceAdapter) {
     console.log('✅ LocalStrategy Guard with Passport');
     super();
   }

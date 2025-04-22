@@ -9,7 +9,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
 
   await app.listen(httpPort);
-  console.log('🚀 Running MS Auth (Open to HTTP) on port: ', httpPort);
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,

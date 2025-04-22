@@ -1,18 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TravelsService } from '../travels.service';
+import { TravelsServiceAdapter } from '../travels.service';
 import { Model } from 'mongoose';
-import { ClientProxyFactory, Transport } from '@nestjs/microservices';
+import { ClientProxyFactory } from '@nestjs/microservices';
 import {
   ForbiddenException,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import * as bcrypt from 'bcrypt';
-import { of, throwError } from 'rxjs'; // Import of and throwError from rxjs
 
 describe('TravelsService', () => {
-  let service: TravelsService;
+  let service: TravelsServiceAdapter;
   let travelModel: Model<any>;
   let msUsersClient: any;
 
@@ -32,7 +29,7 @@ describe('TravelsService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        TravelsService,
+        TravelsServiceAdapter,
         {
           provide: 'TRAVEL_MODEL',
           useValue: mockTravelModel,
@@ -53,7 +50,7 @@ describe('TravelsService', () => {
       ],
     }).compile();
 
-    service = module.get<TravelsService>(TravelsService);
+    service = module.get<TravelsServiceAdapter>(TravelsServiceAdapter);
     travelModel = module.get<Model<any>>('TRAVEL_MODEL');
     msUsersClient = {
       send: jest.fn().mockReturnValue({

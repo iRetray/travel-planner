@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../auth.controller';
-import { AuthService } from '../auth.service';
+import { AuthServiceAdapter } from '../auth.service';
 import { AuthLoginDto } from '../dto/AuthLogin.dto';
 import { AuthRegisterDto } from '../dto/AuthRegister.dto';
 import { TokenDto } from '../dto/TokenDto.dto';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let authService: AuthService;
+  let authService: AuthServiceAdapter;
 
   const mockAuthService = {
     login: jest.fn(),
@@ -19,11 +19,11 @@ describe('AuthController', () => {
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [{ provide: AuthService, useValue: mockAuthService }],
+      providers: [{ provide: AuthServiceAdapter, useValue: mockAuthService }],
     }).compile();
 
     controller = moduleRef.get<AuthController>(AuthController);
-    authService = moduleRef.get<AuthService>(AuthService);
+    authService = moduleRef.get<AuthServiceAdapter>(AuthServiceAdapter);
   });
 
   afterEach(() => {

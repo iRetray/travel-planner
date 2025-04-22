@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TravelsController } from '../travels.controller';
-import { TravelsService } from '../travels.service';
+import { TravelsServiceAdapter } from '../travels.service';
 import { JwtService } from '@nestjs/jwt';
 import { CreateTravelDto, GetTravelDto } from '../dto';
 
 describe('TravelsController', () => {
   let controller: TravelsController;
-  let travelsServiceMock: jest.Mocked<TravelsService>;
+  let travelsServiceMock: jest.Mocked<TravelsServiceAdapter>;
   let jwtServiceMock: jest.Mocked<JwtService>;
 
   beforeEach(async () => {
@@ -17,7 +17,7 @@ describe('TravelsController', () => {
       createTravel: jest.fn(),
       editTravel: jest.fn(),
       deleteTravel: jest.fn(),
-    } as unknown as jest.Mocked<TravelsService>;
+    } as unknown as jest.Mocked<TravelsServiceAdapter>;
 
     jwtServiceMock = {
       decode: jest.fn(),
@@ -26,7 +26,7 @@ describe('TravelsController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TravelsController],
       providers: [
-        { provide: TravelsService, useValue: travelsServiceMock },
+        { provide: TravelsServiceAdapter, useValue: travelsServiceMock },
         { provide: JwtService, useValue: jwtServiceMock },
       ],
     }).compile();

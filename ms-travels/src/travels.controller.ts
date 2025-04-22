@@ -12,7 +12,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
-import { TravelsService } from './travels.service';
+import { TravelsServiceAdapter } from './travels.service';
 
 import { CreateTravelDto, DecodedTokenType, GetTravelDto } from './dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -22,7 +22,7 @@ import { JwtService } from '@nestjs/jwt';
 @Controller('travels')
 export class TravelsController {
   constructor(
-    private readonly travelsService: TravelsService,
+    private readonly travelsService: TravelsServiceAdapter,
     private jwtService: JwtService,
   ) {}
 

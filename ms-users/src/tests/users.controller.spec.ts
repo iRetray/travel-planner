@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from '../users.controller';
-import { UsersService } from '../users.service';
+import { UsersServiceAdapter } from '../users.service';
 import { CreateUserDto, GetUserDto, IsUsernameAvailableDto } from '../dto';
 
 describe('UsersController', () => {
   let controller: UsersController;
-  let usersService: UsersService;
+  let usersService: UsersServiceAdapter;
 
   const mockUsersService = {
     getUser: jest.fn(),
@@ -18,14 +18,14 @@ describe('UsersController', () => {
       controllers: [UsersController],
       providers: [
         {
-          provide: UsersService,
+          provide: UsersServiceAdapter,
           useValue: mockUsersService,
         },
       ],
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
-    usersService = module.get<UsersService>(UsersService);
+    usersService = module.get<UsersServiceAdapter>(UsersServiceAdapter);
   });
 
   it('should be defined', () => {

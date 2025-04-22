@@ -1,12 +1,12 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { CreateUserDto, GetUserDto, IsUsernameAvailableDto } from './dto';
 
-import { UsersService } from './users.service';
+import { UsersServiceAdapter } from './users.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersServiceAdapter) {}
 
   @MessagePattern({ cmd: 'GET_USER' })
   async getUser(data: GetUserDto) {

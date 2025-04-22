@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthServiceAdapter } from './auth.service';
 
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './local.strategy';
@@ -31,8 +31,8 @@ import { DatabaseModule } from './database/database.module';
       },
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, ...authProviders],
-  exports: [AuthService],
+  providers: [AuthServiceAdapter, LocalStrategy, JwtStrategy, ...authProviders],
+  exports: [AuthServiceAdapter],
   controllers: [AuthController],
 })
 export class AuthModule {}

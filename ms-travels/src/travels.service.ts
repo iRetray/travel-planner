@@ -9,7 +9,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 
-import { CreateTravelDto, DecodedTokenType, GetTravelDto } from './dto';
+import { CreateTravelDto, GetTravelDto } from './dto';
 import { TravelType } from './interfaces/Travel';
 import { TravelMongoType } from './interfaces/travel.interface';
 import { Model } from 'mongoose';
@@ -20,9 +20,10 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { UserDto } from './interfaces/User.dto';
+import { TravelsServicePort } from './domain/TravelsService.port';
 
 @Injectable()
-export class TravelsService {
+export class TravelsServiceAdapter implements TravelsServicePort {
   private msUsersClient: ClientProxy;
 
   constructor(

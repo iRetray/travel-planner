@@ -8,7 +8,7 @@ import {
   Headers,
 } from '@nestjs/common';
 
-import { AuthService } from './auth.service';
+import { AuthServiceAdapter } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 
 import { AuthLoginDto } from './dto/AuthLogin.dto';
@@ -18,7 +18,7 @@ import { MessagePattern } from '@nestjs/microservices';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthServiceAdapter) {}
 
   @UseGuards(AuthGuard('local'))
   @UsePipes(new ValidationPipe())
